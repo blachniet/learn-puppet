@@ -1,0 +1,34 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  # Create private network for the puppetmaster and puppetnode to communicate
+  # over. This will appear as the 'eth1' interface.
+  config.vm.network "private_network", ip: "192.168.33.11"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update
+    yum update -y
+
+    # Install ntpd
+    yum install -y ntpd
+    systemctl enable ntpd
+    systemctl start ntpd
+
+    # Set hostname
+    hostnamectl set-hostname puppetnode.localdomain
+
+    # Install puppetserver
+    rpm -Uvh https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
+    yum install -y puppet-agent
+
+    # Add puppetmaster to the hosts file
+    echo "192.168.33.10 puppetmaster puppetmaster.localdomain" >> /etc/hosts
+
+    # Set Puppet server address in agent config
+    echo "[agent]" >> /etc/puppetlabs/puppet/puppet.conf
+    echo "server = puppetmaster.localdomain" >> /etc/puppetlabs/puppet/puppet.conf
+  SHELL
+end

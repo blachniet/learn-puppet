@@ -1,0 +1,54 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  # Create private network for the puppetmaster and puppetnode to communicate
+  # over. This will appear as the 'eth1' interface.
+  config.vm.network "private_network", ip: "192.168.33.10"
+
+  config.vm.provider "virtualbox" do |vb|
+    # I found in practice that I need at least 3GB to run the puppetserver.
+    vb.memory = "3072"
+    vb.cpus = 2
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update
+    yum update -y
+
+    # Install ntpd
+    yum install -y ntpd
+    systemctl enable ntpd
+    systemctl start ntpd
+
+    # Set hostname
+    hostnamectl set-hostname puppetmaster.localdomain
+
+    # Put SELinux in permissive mode
+    # Confirm with `sestatus`
+    setenforce permissive
+    sed -i 's/=enforcing/=permissive/g' /etc/sysconfig/selinux
+
+    # Install puppetserver
+    rpm -Uvh https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
+    yum install -y puppetserver
+    systemctl enable puppetserver
+    systemctl start puppetserver
+
+    # Enable firewalld
+    systemctl enable firewalld
+    systemctl start firewalld
+
+    # Allow puppetmaster service thru firewalld
+    # Confirm this with firewall-cmd --zone=internal --permanent --list-services
+    firewall-cmd --zone=internal --change-interface=eth1
+    firewall-cmd --zone=internal --add-service=puppetmaster
+    firewall-cmd --zone=internal --permanent --add-service=puppetmaster
+
+    # Set Puppet server address in agent config
+    echo "[agent]" >> /etc/puppetlabs/puppet/puppet.conf
+    echo "server = puppetmaster.localdomain" >> /etc/puppetlabs/puppet/puppet.conf
+  SHELL
+end
