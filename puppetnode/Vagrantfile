@@ -12,15 +12,10 @@ Vagrant.configure("2") do |config|
     # Update
     yum update -y
 
-    # Install ntpd
-    yum install -y ntpd
-    systemctl enable ntpd
-    systemctl start ntpd
-
     # Set hostname
     hostnamectl set-hostname puppetnode.localdomain
 
-    # Install puppetserver
+    # Install puppet-agent
     rpm -Uvh https://yum.puppet.com/puppet6-release-el-7.noarch.rpm
     yum install -y puppet-agent
 
