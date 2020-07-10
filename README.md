@@ -13,6 +13,13 @@ This setup is helping me learn more about Puppet. I learn by doing, and this is 
     vagrant up
     ```
 
+1. Run `vagrant rsync-auto` to sync files to puppetmaster.
+
+    ```sh
+    cd puppetmaster
+    vagrant rsync-auto
+    ```
+
 1. Sign the puppetnode certificate. Pay attention to where we are running each of these commands (master vs node).
 
     ```sh
