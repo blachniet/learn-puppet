@@ -32,6 +32,12 @@ This setup is helping me learn more about Puppet. I learn by doing, and this is 
     # Confirm a successful connection on the node.
     [vagrant@puppetnode] sudo /opt/puppetlabs/bin/puppet agent --verbose --no-daemonize --onetime
 
+1. Enable the puppet agent service.
+
+    ```sh
+    sudo /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+    ```
+
 ## Reference
 
 - [Puppet Installation Docs]
