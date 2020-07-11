@@ -22,8 +22,9 @@ Vagrant.configure("2") do |config|
     # Add puppetmaster to the hosts file
     echo "192.168.33.10 puppetmaster puppetmaster.localdomain" >> /etc/hosts
 
-    # Set Puppet server address in agent config
+    # Set Puppet server address and run interval in agent config
     echo "[agent]" >> /etc/puppetlabs/puppet/puppet.conf
     echo "server = puppetmaster.localdomain" >> /etc/puppetlabs/puppet/puppet.conf
+    echo "runinterval = 30s" >> /etc/puppetlabs/puppet/puppet.conf
   SHELL
 end
