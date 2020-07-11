@@ -23,4 +23,6 @@ class linux {
     ensure => running,
     enable => true,
   }
+
+  class { 'glusterfs': }
 }
