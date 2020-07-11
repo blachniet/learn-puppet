@@ -46,8 +46,9 @@ Vagrant.configure("2") do |config|
     # Allow puppetmaster service thru firewalld
     # Confirm this with firewall-cmd --zone=internal --permanent --list-services
     firewall-cmd --zone=internal --change-interface=eth1
+    firewall-cmd --zone=internal --change-interface=eth1 --permanent
     firewall-cmd --zone=internal --add-service=puppetmaster
-    firewall-cmd --zone=internal --permanent --add-service=puppetmaster
+    firewall-cmd --zone=internal --add-service=puppetmaster --permanent
 
     # Set Puppet server address in agent config
     echo "[agent]" >> /etc/puppetlabs/puppet/puppet.conf
